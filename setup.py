@@ -8,7 +8,7 @@ setup(
 	packages=["pydunk"],
 	scripts=[],
 	url="",
-	license='LICENSE.txt',
+	license="LICENSE.txt",
 	description="dunkin donuts with python",
 	long_description=open("README.md").read(),
 	install_requires=[
