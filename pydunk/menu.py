@@ -1,19 +1,32 @@
-import re
+from .api import API
 import requests
+class Category():
+    def __init__(self, name, page_title, alt_text, page_path):
+        self.name = name
+        self.page_title = page_title
+        self.alt_text = alt_text
+        self.page_path = page_path
+        self.items = []
+    def add_item(self, name, page_title, alt_text, page_path):
+        self.items.append(Item(name, page_title, alt_text, page_path, self))
 class Item():
-	def __init__(self, url):
-		self.url = url
+    def __init__(self, name, page_title, alt_text, page_path, category):
+        self.name = name
+        self.page_title = page_title
+        self.alt_text = alt_text
+        self.page_path = page_path
+        self.category = category
 class Menu():
-	def __init__(self, language="en", url="https://www.dunkindonuts.com"):
-		self.language = language
-		self.url = url
-		self.items = self.scrape()
-	def scrape(self): #the FUCKING assholes at dd decided to just send over static html for the menu page instead of using an API, so now I need to fucking scrape html god fucking damnit
-		out = []
-		res = requests.get(self.url+"/"+self.language+"/menu").text
-		urls = [i[3:-1] for i in re.findall("f=\"\\/%s\\/menu\\/(?!nutrition).*?\""%self.language, res)]
-		for i in urls:
-			res = requests.get(self.url+i).text
-			items = [Item(i[3:-1]) for i in re.findall("f=\"\\/%s\\/menu\\/.*\\/product.*?\""%self.language, res)]
-			out+=items
-		return out
+    def __init__(self, api: API=None):
+        self.api = api
+        if(self.api is None):
+            self.api = API()
+        self.menu = []
+        self.get_menu()
+    def get_menu(self):
+        res = self.api.get("menu")
+        category_list = res["list"]
+        for i in category_list:
+            self.menu.append(Category(i["ctatitle"], i["pagetitle"], i["alttext"], i["pagepath"]))
+            for j in i["sublist"]:
+                self.menu[-1].add_item(j["ctatitle"], j["pagetitle"], j["alttext"], j["pagepath"])
