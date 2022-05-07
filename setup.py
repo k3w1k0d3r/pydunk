@@ -7,7 +7,7 @@ setup(
     author_email="juliengrijalva@gmail.com",
     packages=["pydunk"],
     scripts=[],
-    url="",
+    url="https://github.com/k3w1k0d3r/pydunk",
     license="LICENSE.txt",
     description="dunkin donuts with python",
     long_description=open("README.md").read(),
